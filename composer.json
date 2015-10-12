@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": ">=5.6.0",
+        "binsoul/io-stream": "~1.0@dev",
         "binsoul/net": "~1.0@dev",
         "binsoul/net-http-message-bridge": "~1.0@dev",
         "binsoul/net-http-message-message": "~1.0@dev"
