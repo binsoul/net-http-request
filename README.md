@@ -41,12 +41,13 @@ Build a request from provided data:
 
 use BinSoul\Bridge\Http\Message\DefaultStreamFactory;
 use BinSoul\Bridge\Http\Message\DefaultUriFactory;
-use BinSoul\Bridge\Http\Message\Stream;
+use BinSoul\Bridge\Http\Message\Stream as HttpStream;
+use BinSoul\IO\Stream\Type\MemoryStream;
 use BinSoul\Net\Http\Request\RequestFactory;
 
 require 'vendor/autoload.php';
 
-$stream = new Stream('php://memory', 'r+');
+$stream = new HttpStream(new MemoryStream(), 'r+');
 $stream->write('Hello world!');
 
 $factory = new RequestFactory(new DefaultUriFactory(), new DefaultStreamFactory());
