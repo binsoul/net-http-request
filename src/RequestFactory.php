@@ -48,7 +48,7 @@ class RequestFactory
         $server = isset($_SERVER) ? $_SERVER : [];
 
         return $this->buildFromData(
-            $this->streamFactory->build('php://input', 'r'),
+            $this->streamFactory->build('php://input', 'rb'),
             $server,
             $get,
             $post,
@@ -211,6 +211,7 @@ class RequestFactory
             strtolower($headers->get('X-Forwarded-Https')) == 'on' ||
             $headers->get('X-Forwarded-Https') == 1 ||
             strtolower($headers->get('X-Forwarded-Proto')) == 'https' ||
+            strtolower($headers->get('Front-End-Https')) == 'on' ||
             strtolower($server->get('HTTPS')) == 'on' ||
             $server->get('HTTPS') == 1;
     }
