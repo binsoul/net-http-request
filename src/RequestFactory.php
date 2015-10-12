@@ -6,6 +6,7 @@ use BinSoul\Bridge\Http\Message\UriFactory;
 use BinSoul\Bridge\Http\Message\StreamFactory;
 use BinSoul\Net\Http\Message\Collection\HeaderCollection;
 use BinSoul\Net\Http\Message\Collection\ParameterCollection;
+use BinSoul\Net\Http\Message\Part\Header;
 use BinSoul\Net\Http\Message\UploadedFile;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -123,11 +124,29 @@ class RequestFactory
     }
 
     /**
-     * Extracts header parameters from $_SERVER-compatible array.
+     * Converts an uppercase header name from $_SERVER to the real header name.
      *
-     * @param array $server
+     * @param string $name
      *
-     * @return array
+     * @return string
+     */
+    private function convertHeaderName($name)
+    {
+        $key = strtolower(strtr($name, '_', '-'));
+        $result = Header::getRegisteredName($key);
+        if ($result == $key) {
+            $result = strtr(ucwords(strtr(strtolower($name), '_', ' ')), ' ', '-');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Extracts header parameters from $_SERVER compatible array.
+     *
+     * @param mixed[] $server
+     *
+     * @return mixed[]
      */
     private function extractHeaderValues(array $server)
     {
@@ -137,22 +156,10 @@ class RequestFactory
                 continue;
             }
 
-            if ($value && strpos($key, 'HTTP_') === 0) {
-                $name = strtr(substr($key, 5), '_', ' ');
-                $name = strtr(ucwords(strtolower($name)), ' ', '-');
-
-                $headers[$name] = $value;
-
-                continue;
-            }
-
-            if ($value && strpos($key, 'CONTENT_') === 0) {
-                $name = substr($key, 8);
-                $name = 'Content-'.(($name == 'MD5') ? $name : ucfirst(strtolower($name)));
-
-                $headers[$name] = $value;
-
-                continue;
+            if (strpos($key, 'HTTP_') === 0) {
+                $headers[$this->convertHeaderName(substr($key, 5))] = $value;
+            } elseif (strpos($key, 'CONTENT_') === 0) {
+                $headers[$this->convertHeaderName($key)] = $value;
             }
         }
 
