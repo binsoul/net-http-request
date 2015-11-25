@@ -2,6 +2,7 @@
     "name": "binsoul/net-http-request",
     "description": "Extended ServerRequest class and request factory",
     "keywords": [
+        "network",
         "http",
         "request"
     ],
