@@ -4,8 +4,8 @@ namespace BinSoul\Test\Http\Request\Role;
 
 use BinSoul\Net\Http\Request\Role\NetworkRole;
 
-class NetworkRoleImplementation extends NetworkRole {
-
+class NetworkRoleImplementation extends NetworkRole
+{
 }
 
 class NetworkRoleTest extends \PHPUnit_Framework_TestCase
