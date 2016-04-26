@@ -20,13 +20,14 @@ abstract class NetworkRole
      * @param string   $ip   server IP address
      * @param int|null $port server port number
      */
-    public function __construct($ip, $port = null)
+    public function __construct(string $ip, $port = null)
     {
         if (IP::isValid($ip)) {
             $this->ip = new IP($ip);
         } else {
             $this->ip = new IP('127.0.0.1');
         }
+        
         $this->port = $port;
     }
 
@@ -35,7 +36,7 @@ abstract class NetworkRole
      *
      * @return IP
      */
-    public function getIP()
+    public function getIP(): IP
     {
         return $this->ip;
     }

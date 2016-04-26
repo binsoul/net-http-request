@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request\Header;
 
 /**
@@ -19,7 +21,7 @@ abstract class SortableValuesHeader
      *
      * @param string $header raw value of the header
      */
-    public function __construct($header)
+    public function __construct(string $header)
     {
         $this->values = $this->parseHeader($header);
         if (count($this->values) == 0) {
@@ -32,7 +34,7 @@ abstract class SortableValuesHeader
      *
      * @return float[]
      */
-    protected function getDefault()
+    protected function getDefault(): array
     {
         return ['*' => 1.0];
     }
@@ -44,7 +46,7 @@ abstract class SortableValuesHeader
      *
      * @return float[]
      */
-    private function parseHeader($header)
+    private function parseHeader(string $header): array
     {
         $result = [];
         if (trim($header) == '') {

@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request\Header;
 
 /**
@@ -7,7 +9,7 @@ namespace BinSoul\Net\Http\Request\Header;
  */
 class AcceptMediaTypeHeader extends SortableValuesHeader
 {
-    protected function getDefault()
+    protected function getDefault(): array 
     {
         return ['*/*' => 1.0];
     }
@@ -17,7 +19,7 @@ class AcceptMediaTypeHeader extends SortableValuesHeader
      *
      * @return string[]
      */
-    public function getMediaTypes()
+    public function getMediaTypes(): array 
     {
         return array_keys($this->values);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request\Header;
 
 /**
@@ -12,7 +14,7 @@ class AcceptLanguageHeader extends SortableValuesHeader
      *
      * @return string[]
      */
-    public function getLanguages()
+    public function getLanguages(): array 
     {
         return array_keys($this->values);
     }
@@ -22,7 +24,7 @@ class AcceptLanguageHeader extends SortableValuesHeader
      *
      * @return string[]
      */
-    public function getLocales()
+    public function getLocales(): array 
     {
         $result = array_keys($this->values);
         foreach ($result as $key => $value) {

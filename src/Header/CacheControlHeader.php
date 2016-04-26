@@ -16,7 +16,7 @@ class CacheControlHeader
      * @param string $cacheControl raw value of the "Cache-Control" header
      * @param string $pragma       raw value of the "Pragma" header
      */
-    public function __construct($cacheControl, $pragma)
+    public function __construct(string $cacheControl, string $pragma)
     {
         $this->cacheControl = $this->parseHeader($cacheControl);
         if (count($this->cacheControl) == 0 && trim(strtolower($pragma)) == 'no-cache') {
@@ -29,7 +29,7 @@ class CacheControlHeader
      *
      * @return bool
      */
-    public function hasMaxAge()
+    public function hasMaxAge(): bool 
     {
         return isset($this->cacheControl['no-cache']) || isset($this->cacheControl['max-age']);
     }
@@ -41,7 +41,7 @@ class CacheControlHeader
      *
      * @return int
      */
-    public function getMaxAge()
+    public function getMaxAge(): int 
     {
         if (isset($this->cacheControl['no-cache'])) {
             return 0;
@@ -59,7 +59,7 @@ class CacheControlHeader
      *
      * @return bool
      */
-    public function isRefresh()
+    public function isRefresh(): bool 
     {
         return isset($this->cacheControl['max-age']) ? ($this->cacheControl['max-age'] == 0) : false;
     }
@@ -69,7 +69,7 @@ class CacheControlHeader
      *
      * @return bool
      */
-    public function isReload()
+    public function isReload(): bool 
     {
         return isset($this->cacheControl['no-cache']);
     }
@@ -81,7 +81,7 @@ class CacheControlHeader
      *
      * @return mixed[]
      */
-    private function parseHeader($header)
+    private function parseHeader(string $header): array 
     {
         $result = [];
 

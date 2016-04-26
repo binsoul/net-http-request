@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request\Role;
 
 /**
@@ -51,9 +53,9 @@ class ClientRole extends NetworkRole
      *
      * @return bool
      */
-    public function isHeadless()
+    public function isHeadless(): bool
     {
-        $ip = sprintf('%u', ip2long($this->ip));
+        $ip = sprintf('%u', ip2long((string) $this->ip));
 
         foreach (self::$clouds as $range) {
             if ($ip >= $range['start'] && $ip <= $range['end']) {

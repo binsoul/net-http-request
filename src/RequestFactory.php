@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request;
 
 use BinSoul\Bridge\Http\Message\UriFactory;
@@ -39,7 +41,7 @@ class RequestFactory
      *
      * @return Request
      */
-    public function buildFromEnvironment()
+    public function buildFromEnvironment(): Request
     {
         $get = isset($_GET) ? $_GET : [];
         $post = isset($_POST) ? $_POST : [];
@@ -76,11 +78,11 @@ class RequestFactory
         array $post = [],
         array $cookie = [],
         array $files = []
-    ) {
+    ): Request {
         $headerCollection = new HeaderCollection($this->extractHeaderValues($server));
         $serverCollection = new ParameterCollection($this->extractServerValues($server));
 
-        if (strpos($headerCollection->get('Content-Type'), 'application/x-www-form-urlencoded') === 0 &&
+        if (strpos($headerCollection->get('Content-Type', ''), 'application/x-www-form-urlencoded') === 0 &&
             in_array(strtoupper($serverCollection->get('REQUEST_METHOD', 'GET')), ['PUT', 'DELETE'])
         ) {
             parse_str((string) $inputStream, $post);
@@ -109,7 +111,7 @@ class RequestFactory
      *
      * @return array
      */
-    private function extractServerValues(array $server)
+    private function extractServerValues(array $server): array
     {
         $result = [];
         foreach ($server as $key => $value) {
@@ -130,7 +132,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function convertHeaderName($name)
+    private function convertHeaderName(string $name): string
     {
         $key = strtolower(strtr($name, '_', '-'));
         $result = Header::getRegisteredName($key);
@@ -148,7 +150,7 @@ class RequestFactory
      *
      * @return mixed[]
      */
-    private function extractHeaderValues(array $server)
+    private function extractHeaderValues(array $server): array
     {
         $headers = [];
         foreach ($server as $key => $value) {
@@ -173,9 +175,9 @@ class RequestFactory
      *
      * @return string
      */
-    private function getProtocol(ParameterCollection $server)
+    private function getProtocol(ParameterCollection $server): string
     {
-        if (preg_match('/([0-9\.]+)/', $server->get('SERVER_PROTOCOL'), $matches)) {
+        if (preg_match('/([0-9\.]+)/', $server->get('SERVER_PROTOCOL', ''), $matches)) {
             return $matches[0];
         }
 
@@ -192,7 +194,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function getMethod(ParameterCollection $server, HeaderCollection $headers)
+    private function getMethod(ParameterCollection $server, HeaderCollection $headers): string
     {
         return strtoupper($headers->get('X-Http-Method-Override', $server->get('REQUEST_METHOD', 'GET')));
     }
@@ -205,14 +207,14 @@ class RequestFactory
      *
      * @return bool
      */
-    private function isSSL(ParameterCollection $server, HeaderCollection $headers)
+    private function isSSL(ParameterCollection $server, HeaderCollection $headers): bool
     {
         return
-            strtolower($headers->get('X-Forwarded-Https')) == 'on' ||
+            strtolower($headers->get('X-Forwarded-Https', '')) == 'on' ||
             $headers->get('X-Forwarded-Https') == 1 ||
-            strtolower($headers->get('X-Forwarded-Proto')) == 'https' ||
-            strtolower($headers->get('Front-End-Https')) == 'on' ||
-            strtolower($server->get('HTTPS')) == 'on' ||
+            strtolower($headers->get('X-Forwarded-Proto', '')) == 'https' ||
+            strtolower($headers->get('Front-End-Https', '')) == 'on' ||
+            strtolower($server->get('HTTPS', '')) == 'on' ||
             $server->get('HTTPS') == 1;
     }
 
@@ -226,7 +228,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function getScheme(ParameterCollection $server, HeaderCollection $headers)
+    private function getScheme(ParameterCollection $server, HeaderCollection $headers): string
     {
         return $this->isSSL($server, $headers) ? 'https' : 'http';
     }
@@ -242,7 +244,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function getHost(ParameterCollection $server, HeaderCollection $headers)
+    private function getHost(ParameterCollection $server, HeaderCollection $headers): string
     {
         if (($result = $headers->get('X-Forwarded-Host'))) {
             $elements = explode(',', $result);
@@ -278,7 +280,7 @@ class RequestFactory
      *
      * @return int
      */
-    private function getPort(ParameterCollection $server, HeaderCollection $headers)
+    private function getPort(ParameterCollection $server, HeaderCollection $headers): int
     {
         if ((int) $headers->get('X-Forwarded-Port', 0) > 0) {
             return (int) $headers->get('X-Forwarded-Port', 0);
@@ -293,7 +295,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function getPathAndQuery(ParameterCollection $server, HeaderCollection $headers)
+    private function getPathAndQuery(ParameterCollection $server, HeaderCollection $headers): string
     {
         $result = '';
 
@@ -319,7 +321,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function getBaseUrl(ParameterCollection $server, $requestUri)
+    private function getBaseUrl(ParameterCollection $server, string $requestUri): string
     {
         $filename = basename($server->get('SCRIPT_FILENAME'));
 
@@ -373,7 +375,7 @@ class RequestFactory
      *
      * @return string
      */
-    private function getPath(ParameterCollection $server, HeaderCollection $headers)
+    private function getPath(ParameterCollection $server, HeaderCollection $headers): string
     {
         $requestUri = $this->getPathAndQuery($server, $headers);
         if (($pos = strpos($requestUri, '?'))) {
@@ -400,7 +402,7 @@ class RequestFactory
      *
      * @return UriInterface
      */
-    private function buildUri(ParameterCollection $server, HeaderCollection $headers)
+    private function buildUri(ParameterCollection $server, HeaderCollection $headers): UriInterface
     {
         $query = ltrim($server->get('QUERY_STRING', ''), '?');
         if ($query != '') {
@@ -424,7 +426,7 @@ class RequestFactory
      *
      * @return UploadedFileInterface[]
      */
-    private function buildFiles(array $files)
+    private function buildFiles(array $files): array
     {
         $result = [];
         foreach ($files as $key => $value) {
@@ -481,7 +483,7 @@ class RequestFactory
      *
      * @return UploadedFileInterface[]
      */
-    private function buildNestedFiles(array $files)
+    private function buildNestedFiles(array $files): array
     {
         $result = [];
         foreach (array_keys($files['tmp_name']) as $key) {

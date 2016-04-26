@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request\Header;
 
 /**
@@ -12,7 +14,7 @@ class AcceptCharsetHeader extends SortableValuesHeader
      *
      * @return string[]
      */
-    public function getCharsets()
+    public function getCharsets(): array 
     {
         return array_keys($this->values);
     }

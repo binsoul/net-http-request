@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request\Header;
 
 /**
@@ -67,7 +69,7 @@ class UserAgentHeader
      *
      * @param string $userAgent raw value of the "User-Agent" header
      */
-    public function __construct($userAgent)
+    public function __construct(string $userAgent)
     {
         $this->userAgent = $userAgent;
     }
@@ -77,7 +79,7 @@ class UserAgentHeader
      *
      * @return string
      */
-    public function getPlatform()
+    public function getPlatform(): string
     {
         if ($this->platform !== null) {
             return $this->platform;
@@ -109,7 +111,7 @@ class UserAgentHeader
      *
      * @return string[]
      */
-    private function extractBrowser($userAgent)
+    private function extractBrowser(string $userAgent): array
     {
         $displayName = 'unknown';
         $uaBrowser = '';
@@ -207,7 +209,7 @@ class UserAgentHeader
      *
      * @return string
      */
-    public function getBrowser()
+    public function getBrowser(): string
     {
         if ($this->browser !== null) {
             return $this->browser;
@@ -231,7 +233,7 @@ class UserAgentHeader
      *
      * @return string
      */
-    public function getDeviceType()
+    public function getDeviceType(): string
     {
         if ($this->deviceType !== null) {
             return $this->deviceType;
@@ -269,7 +271,7 @@ class UserAgentHeader
      *
      * @return bool
      */
-    public function isBot()
+    public function isBot(): bool
     {
         if ($this->isBot !== null) {
             return $this->isBot;

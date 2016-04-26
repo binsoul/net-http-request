@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types = 1);
+
 namespace BinSoul\Net\Http\Request;
 
 use BinSoul\Net\Http\Message\ServerRequest;
@@ -32,7 +34,7 @@ class Request extends ServerRequest
      *
      * @return string|mixed[]
      */
-    public function get($name, $default = null)
+    public function get(string $name, $default = null)
     {
         $result = $default;
         if ($this->attributes->has($name)) {
@@ -53,7 +55,7 @@ class Request extends ServerRequest
      *
      * @return bool
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return $this->attributes->has($name) || $this->query->has($name) || $this->post->has($name);
     }
@@ -63,7 +65,7 @@ class Request extends ServerRequest
      *
      * @return mixed[]
      */
-    public function all()
+    public function all(): array
     {
         return array_merge(
             $this->post->all(),
@@ -77,13 +79,13 @@ class Request extends ServerRequest
      *
      * @return bool
      */
-    public function isSSL()
+    public function isSSL(): bool
     {
         return
-            strtolower($this->headers->get('X-Forwarded-Https')) == 'on' ||
+            strtolower($this->headers->get('X-Forwarded-Https', '')) == 'on' ||
             $this->headers->get('X-Forwarded-Https') == 1 ||
-            strtolower($this->headers->get('X-Forwarded-Proto')) == 'https' ||
-            strtolower($this->server->get('HTTPS')) == 'on' ||
+            strtolower($this->headers->get('X-Forwarded-Proto', '')) == 'https' ||
+            strtolower($this->server->get('HTTPS', '')) == 'on' ||
             $this->server->get('HTTPS') == 1;
     }
 
@@ -92,9 +94,9 @@ class Request extends ServerRequest
      *
      * @return bool
      */
-    public function isJavascript()
+    public function isJavascript(): bool
     {
-        return strtolower($this->headers->get('X-Requested-With')) == 'xmlhttprequest';
+        return strtolower($this->headers->get('X-Requested-With', '')) == 'xmlhttprequest';
     }
 
     /**
@@ -102,7 +104,7 @@ class Request extends ServerRequest
      *
      * @return bool
      */
-    public function isDoNotTrack()
+    public function isDoNotTrack(): bool
     {
         return $this->headers->get('DNT', '0') == '1';
     }
@@ -112,19 +114,19 @@ class Request extends ServerRequest
      *
      * @return ClientRole
      */
-    public function getClient()
+    public function getClient(): ClientRole
     {
         $ip = '';
         $values = $this->headers->getValues('X-Forwarded-For');
         if (count($values) > 0 && IP::isValid($values[count($values) - 1])) {
             $ip = $values[count($values) - 1];
-        } elseif (IP::isValid($this->headers->get('Client-IP'))) {
+        } elseif (IP::isValid($this->headers->get('Client-IP', ''))) {
             $ip = $this->headers->get('Client-IP');
-        } elseif (IP::isValid($this->server->get('REMOTE_ADDR'))) {
+        } elseif (IP::isValid($this->server->get('REMOTE_ADDR', ''))) {
             $ip = $this->server->get('REMOTE_ADDR');
         }
 
-        $port = $this->server->get('REMOTE_PORT', 0);
+        $port = $this->server->get('REMOTE_PORT');
 
         return new ClientRole($ip, $port);
     }
@@ -134,10 +136,10 @@ class Request extends ServerRequest
      *
      * @return ServerRole
      */
-    public function getServer()
+    public function getServer(): ServerRole
     {
-        $ip = $this->server->get('SERVER_ADDR');
-        $port = $this->server->get('SERVER_PORT', 0);
+        $ip = $this->server->get('SERVER_ADDR', '127.0.0.1');
+        $port = $this->server->get('SERVER_PORT');
 
         return new ServerRole($ip, $port);
     }
@@ -147,7 +149,7 @@ class Request extends ServerRequest
      *
      * @return UserAgentHeader
      */
-    public function getUserAgent()
+    public function getUserAgent(): UserAgentHeader
     {
         if ($this->headers->get('X-Original-User-Agent') != '') {
             $result = $this->headers->get('X-Original-User-Agent');
@@ -169,11 +171,11 @@ class Request extends ServerRequest
      *
      * @return CacheControlHeader
      */
-    public function getCacheControl()
+    public function getCacheControl(): CacheControlHeader
     {
         return new CacheControlHeader(
-            $this->headers->get('Cache-Control'),
-            $this->headers->get('Pragma')
+            $this->headers->get('Cache-Control', ''),
+            $this->headers->get('Pragma', '')
         );
     }
 
@@ -182,9 +184,9 @@ class Request extends ServerRequest
      *
      * @return AcceptMediaTypeHeader
      */
-    public function getAcceptMediaType()
+    public function getAcceptMediaType(): AcceptMediaTypeHeader
     {
-        return new AcceptMediaTypeHeader($this->headers->get('Accept'));
+        return new AcceptMediaTypeHeader($this->headers->get('Accept', ''));
     }
 
     /**
@@ -192,9 +194,9 @@ class Request extends ServerRequest
      *
      * @return AcceptEncodingHeader
      */
-    public function getAcceptEncoding()
+    public function getAcceptEncoding(): AcceptEncodingHeader
     {
-        return new AcceptEncodingHeader($this->headers->get('Accept-Encoding'));
+        return new AcceptEncodingHeader($this->headers->get('Accept-Encoding', ''));
     }
 
     /**
@@ -202,9 +204,9 @@ class Request extends ServerRequest
      *
      * @return AcceptLanguageHeader
      */
-    public function getAcceptLanguage()
+    public function getAcceptLanguage(): AcceptLanguageHeader
     {
-        return new AcceptLanguageHeader($this->headers->get('Accept-Language'));
+        return new AcceptLanguageHeader($this->headers->get('Accept-Language', ''));
     }
 
     /**
@@ -212,8 +214,8 @@ class Request extends ServerRequest
      *
      * @return AcceptCharsetHeader
      */
-    public function getAcceptCharset()
+    public function getAcceptCharset(): AcceptCharsetHeader
     {
-        return new AcceptCharsetHeader($this->headers->get('Accept-Charset'));
+        return new AcceptCharsetHeader($this->headers->get('Accept-Charset', ''));
     }
 }
